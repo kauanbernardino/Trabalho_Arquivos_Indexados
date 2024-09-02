@@ -160,6 +160,27 @@ void lerDadosMedicamentos (struct medicamento medicamen[], int &cont){
     }
     cont = i-1;
 }
+void lerDadosMedicos(struct medico med[], int &cont){
+    int i = 0;
+    for (int saida = 1; i < 2 && saida != 0; i++){
+        cout << "\n\nCodigo do Medico " << (i+1) << ": ";
+        cin >> med[i].cod_medico;
+        if (med[i].cod_medico > 0){
+        	cout << "Nome: ";
+            cin >> med[i].nome;
+            cout << "Especialidade: ";
+            cin >> med[i].codigo_especialidade;
+            cout << "Endereco: ";
+            cin >> med[i].endereco; 
+            cout << "Numero: ";
+            cin >> med[i].numero; 
+            cout << "codigo cidade: ";
+            cin >> med[i].codigo_cidade;
+        }
+        else saida = 0;
+    }
+    cont = i-1;
+}
 
 //Fim da leitura de Dados
 
