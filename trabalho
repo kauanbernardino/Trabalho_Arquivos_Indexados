@@ -25,7 +25,7 @@ struct cidade{
 	string uf;
 };
 struct indice_cidade{
-	int cod_ind;
+	int codigo;
 	int ender;
 };
 struct especialidade{
@@ -33,7 +33,7 @@ struct especialidade{
 	string descricao;
 };
 struct indice_especialidade{
-	int cod_ind;
+	int codigo;
 	int ender;
 };
 struct medico{
@@ -45,7 +45,7 @@ struct medico{
 	int codigo_cidade;
 };
 struct indice_medicos {
-	int cod_ind;
+	int codigo;
 	int ender;
 };
 struct paciente{
@@ -54,10 +54,18 @@ struct paciente{
 	string endereco;
 	int codigo_cidade;
 };
-i
+struct indice_paciente{
+	int codigo;
+	int ender;
+};
+
 struct cid{ 
 	int codigo_cid;
 	string descricao;
+};
+struct indice_CID {
+	int codigo;
+	int ender;
 };
 struct medicamento{
 	int codigo_medicamento;
@@ -66,6 +74,10 @@ struct medicamento{
 	int estoque_min;
 	int estoque_max;
 	float preco_unitario;
+};
+struct indice_medicamento {
+	int codigo;
+	int ender;
 };
 struct consulta{
 	int codigo_consulta; 
@@ -76,6 +88,10 @@ struct consulta{
 	int codigo_cid; 
 	int codigo_medicamento;
 	int quantidade_medicamento; 
+};
+struct indice_consulta {
+	int codigo;
+	int ender;
 };
 //Fim das structs
 
@@ -149,18 +165,22 @@ void lerDadosMedicamentos (struct medicamento medicamen[], int &cont){
 
 //Inclusao de medicos 
 
-void inclusao (struct indice idx[], struct medico med[], int &cont, int cod){
+void inclusao (struct indice_medicos[], struct medico med[], int &cont, int cod){
     cont++;
     // inclusao do novo registro na area de dados
-    cli[cont].codigo = cod;
+    med[cont].cod_medico = cod;
     cout << "Nome: ";
-    cin >> cli[cont].nome;
+    cin >> med[cont].nome;
     cout << "Endereco: ";
-    cin >> cli[cont].endereco;
-    cout << "Cidade: ";
-    cin >> cli[cont].cidade;
+    cin >> med[cont].endereco;
+    cout << "Codigo da cidade: ";
+    cin >> med[cont].cod_cidade;
     cout << "Estado: ";
-    cin >> cli[cont].uf;
+    cin >> med[cont].uf;
+    cout << "Numero: ";
+    cin>> med[cont].numero;
+    cout << " Codigo da Especialidade: ";
+    cin >> med[cont].codigo_especialidade;
     // inclusao na area de indices
     int i;
     for (i = cont - 1; idx[i].codigo > cod; i--){
