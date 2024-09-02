@@ -278,6 +278,10 @@ int opcao;
 				break;
 				menu();
 			case 3:
+				lerDadosMedicos(med,contador_medicos);
+				getch();
+				break;
+			case 4:
 				inclusaoMedicos(med,idx,contador_med);
 				getch();
 				break;
@@ -286,4 +290,3 @@ int opcao;
 
     return 0;
 }
-a
