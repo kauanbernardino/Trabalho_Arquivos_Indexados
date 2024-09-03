@@ -16,6 +16,7 @@ void verificarEstoqueMedicamentos();
 void calcularValorTotalConsultas();
 void reorganizarPacientes();
 void exibirmenu();
+void inclusao_Medico();
 
 //Declaração de structs 
 
@@ -186,29 +187,29 @@ void lerDadosMedicos(struct medico med[], int &cont){
 
 //Inclusao de medicos 
 
-void inclusao (struct indice_medicos[], struct medico med[], int &cont, int cod){
+void inclusao_Medico (struct indice_medicos idx[], struct medico med[], int &cont){
     cont++;
     // inclusao do novo registro na area de dados
-    med[cont].cod_medico = cod;
+    // fazer pedido do codigo a ser adicionado aqui 
+    cout << "Digite o codigo a ser incluido ";
+    cin >> med[cont].cod_medico;
     cout << "Nome: ";
     cin >> med[cont].nome;
     cout << "Endereco: ";
     cin >> med[cont].endereco;
     cout << "Codigo da cidade: ";
-    cin >> med[cont].cod_cidade;
-    cout << "Estado: ";
-    cin >> med[cont].uf;
+    cin >> med[cont].codigo_cidade;
     cout << "Numero: ";
     cin>> med[cont].numero;
     cout << " Codigo da Especialidade: ";
     cin >> med[cont].codigo_especialidade;
     // inclusao na area de indices
     int i;
-    for (i = cont - 1; idx[i].codigo > cod; i--){
+    for (i = cont - 1; idx[i].codigo > med[cont].cod_medico ; i--){
         idx[i+1].codigo = idx[i].codigo;
         idx[i+1].ender = idx[i].ender;
     }
-    idx[i+1].codigo = cod;
+    idx[i+1].codigo = med[cont].cod_medico;
     idx[i+1].ender = cont;
     cout << "\n\nInclusao realizada com Sucesso";
 }
@@ -235,8 +236,8 @@ char menu() {
     cout << "\n|            0. Sair                           |";
     cout << "\n|            1. Leitura de Cidades             |";
     cout << "\n|            2. Leitura de Especialidade       |";
-    cout << "\n|            3. Inclusão de Instrutores        |";
-    cout << "\n|            4. Inclusão de Alunos             |";
+    cout << "\n|            3. Leitura de Medicos        	  |";
+    cout << "\n|            4. Inclusão de Medicos            |";
     cout << "\n|            5. Exclusão de Alunos             |";
     cout << "\n|            6. Inclusão de Turmas             |";
     cout << "\n|            7. Inclusão de Matrículas         |";
@@ -257,8 +258,10 @@ int main() {
 	struct paciente pac[2];
 	struct cid cid[2];
 	struct medicamento medicamen[2];
+	struct indice_medicos idxmed[2];
+	
 	struct consulta con[2]; 
-	int contador_cidade, contador_esp, contador_cid, contador_medicamentos, contador_medicos;
+	int contador_cidade, contador_esp, contador_cid, contador_medicamentos, contador_medicos, contador_med, cod;
 	
 
 
@@ -282,7 +285,7 @@ int opcao;
 				getch();
 				break;
 			case 4:
-				inclusaoMedicos(med,idx,contador_med);
+				inclusao_Medico(idxmed, med, contador_med);
 				getch();
 				break;
 	}	
