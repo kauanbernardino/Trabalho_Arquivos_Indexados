@@ -384,7 +384,7 @@ char menu() {
     cout << "\n|            0. Sair                           |";
     cout << "\n|            1. Leitura de Cidades             |";
     cout << "\n|            2. Leitura de Especialidade       |";
-    cout << "\n|            3. Leitura de Medicos        	  |";
+    cout << "\n|            3. Leitura de Medicos             |";
     cout << "\n|            4. Inclusão de Medicos            |";
     cout << "\n|            5. Leitura de Pacientes           |";
     cout << "\n|            6. Inclusão de Pacientes          |";
