@@ -1,534 +1,884 @@
 #include <iostream>
-#include <conio.h>  
-#include <string>
-#include <iomanip>
-
+#include <conio.h>
+#include <string.h>
+#include <locale>
 using namespace std;
 
-// Declaração de funções
-void incluirMedico();
-void incluirPaciente();
-void exclusaoPacientes();
-void excluirMedico();
-void agendarConsulta();
-void exibirmenu();
-void inclusao_Medico();
-void inclusao_Paciente();
-void buscaaleat_especialidade();
-void leitura_indiceesp();
-bool busca_codmedico();
-void busca_cidade();
-void mostrarMedicos();
-void mostrarPaciente();
-void mostrarMedicos();
-
-// Declaração de structs
 struct cidade {
-    int codigo_cidade;
-    string nome; 
-    string uf;
+    int cod_cidade;
+    string nome;
+    char uf[2]; 
 };
-struct indice_cidade {
-    int codigo;
-    int ender;
-};
+
 struct especialidade {
-    int codigo_especialidade;
+    int codEspec;
     string descricao;
 };
-struct indice_especialidade {
-    int codigo;
-    int ender;
-};
+
 struct medico {
     int cod_medico;
     string nome;
-    int codigo_especialidade;
+    int cod_espec;
     string endereco;
-    string numero;
-    int codigo_cidade;
+    string telefone;
+    int cod_cidade;
+    int status;
+
 };
-struct indice_medicos {
-    int codigo;
-    int ender;
-};
+
 struct paciente {
     int cod_paciente;
     string nome;
     string endereco;
-    int codigo_cidade;
+    int cod_cidade;
+    int status;
 };
-struct indice_paciente {
-    int codigo;
-    int ender;
-};
-struct cid { 
-    int codigo_cid;
+
+struct cid {
+    int codi_CID;
     string descricao;
 };
-struct indice_CID {
-    int codigo;
-    int ender;
-};
+
 struct medicamento {
-    int codigo_medicamento;
+    int cod_medicamento;
     string descricao;
-    int quant_estoque;
+    int qtde_estoque;
     int estoque_min;
     int estoque_max;
     float preco_unitario;
 };
-struct indice_medicamento {
-    int codigo;
-    int ender;
-};
+
 struct consulta {
-    int codigo_consulta; 
-    int codigo_paciente;
-    int codigo_medico;
+    int cod_consulta;
+    int cod_paciente;
+    int cod_medico;
     string data;
     string horario;
-    int codigo_cid; 
-    int codigo_medicamento;
-    int quantidade_medicamento; 
-};
-struct indice_consulta {
-    int codigo;
-    int ender;
+    int cod_CID;
+    int cod_medicamento;
+    int qtde_medicamento;
 };
 
-// Leitura de dados
-void lerDadosCidades(struct cidade city[], int &cont) {
-    int i = 0;
-    for (int saida = 1; i < 2 && saida != 0; i++) {
-        cout << "\n\nCodigo da Cidade " << (i + 1) << ": ";
-        cin >> city[i].codigo_cidade;
-        if (city[i].codigo_cidade > 0) {
+struct indice {
+        int codigo;
+        int ender;
+};
+
+//cidade
+void leitura_cidade(struct cidade cid[], int &cont ){
+	int i = 0;
+    for (int saida = 1; i < 5 && saida != 0; i++){
+        cout<<"\n\nCodigo da Cidade " << (i+1) << ": ";
+        cin >> cid[i].cod_cidade;
+        cin.ignore();
+        if (cid[i].cod_cidade > 0){
             cout << "Nome: ";
-            cin >> city[i].nome;
-            cout << "UF: ";
-            cin >> city[i].uf;
-        } else {
-            saida = 0;
+            getline(cin, cid[i].nome);
+            cout << "Estado: ";
+            cin >> cid[i].uf;
         }
+        else saida = 0;
     }
-    cont = i;
-}
-void leitura_indicecidades (struct indice_cidade idxcity[], int cont){
-    for (int i = 0; i < cont; i++){
-        cout << "\n\nCodigo do Indice " << (i+1) << ": ";
-        cin >> idxcity[i].codigo;
-        cout << "Endereco Fisico na Area de Dados: ";
-        cin >> idxcity[i].ender;
-    }
-}
-void lerDadosEspecialidades(struct especialidade esp[], int &cont) {
-    int i = 0;
-    for (int saida = 1; i < 2 && saida != 0; i++) {
-        cout << "\n\nCodigo da Especialidade " << (i + 1) << ": ";
-        cin >> esp[i].codigo_especialidade;
-        if (esp[i].codigo_especialidade > 0) {
-            cout << "Descricao: ";
-            cin >> esp[i].descricao;
-        } else {
-            saida = 0;
-        }
-    }
-    cont = i;
-}
-void leitura_indiceesp (struct indice_especialidade idxesp[], int cont){
-    for (int i = 0; i < cont; i++){
-        cout << "\n\nCodigo do Indice " << (i+1) << ": ";
-        cin >> idxesp[i].codigo;
-        cout << "Endereco Fisico na Area de Dados: ";
-        cin >> idxesp[i].ender;
-    }
-}
-void lerDadosCID(struct cid cid[], int &cont) {
-    int i = 0;
-    for (int saida = 1; i < 2 && saida != 0; i++) {
-        cout << "\n\nCodigo do CID " << (i + 1) << ": ";
-        cin >> cid[i].codigo_cid;
-        if (cid[i].codigo_cid > 0) {
-            cout << "Descricao: ";
-            cin >> cid[i].descricao;
-        } else {
-            saida = 0;
-        }
-    }
-    cont = i;
-}
-void leitura_indicecid (struct indice_CID idxcid[], int cont){
-    for (int i = 0; i < cont; i++){
-        cout << "\n\nCodigo do Indice " << (i+1) << ": ";
-        cin >> idxcid[i].codigo;
-        cout << "Endereco Fisico na Area de Dados: ";
-        cin >> idxcid[i].ender;
-    }
-}
-void lerDadosMedicamentos(struct medicamento medicamen[], int &cont) {
-    int i = 0;
-    for (int saida = 1; i < 2 && saida != 0; i++) {
-        cout << "\n\nCodigo do Medicamento " << (i + 1) << ": ";
-        cin >> medicamen[i].codigo_medicamento;
-        if (medicamen[i].codigo_medicamento > 0) {
-            cout << "Descricao: ";
-            cin >> medicamen[i].descricao;
-            cout << "Quantidade em estoque: ";
-            cin >> medicamen[i].quant_estoque; 
-            cout << "Estoque Minimo: ";
-            cin >> medicamen[i].estoque_min; 
-            cout << "Estoque Maximo: ";
-            cin >> medicamen[i].estoque_max;
-            cout << "Preco Unitario: ";
-            cin >> medicamen[i].preco_unitario; 
-        } else {
-            saida = 0;
-        }
-    }
-    cont = i;
-}
-void lerDadosMedicos(struct medico med[], int &cont) {
-    int i = 0;
-    for (int saida = 1; i < 1 && saida != 0; i++) {
-        cout << "\n\nCodigo do Medico " << (i + 1) << ": ";
-        cin >> med[i].cod_medico;
-        if (med[i].cod_medico > 0) {
-            cout << "Nome: ";
-            cin >> med[i].nome;
-            cout << "Especialidade: ";
-            cin >> med[i].codigo_especialidade;
-            cout << "Endereco: ";
-            cin >> med[i].endereco; 
-            cout << "Numero: ";
-            cin >> med[i].numero; 
-            cout << "Codigo cidade: ";
-            cin >> med[i].codigo_cidade;
-        } else {
-            saida = 0;
-        }
-    }
-    cont = i;
+    cont = i-1;
 }
 
-//Buscas Binarias 
-void busca_cidade (struct cidade city[], struct indice_cidade idxcity[], int &contador_cidade, int codcidade){
-    int i = 0, f = contador_cidade -1 ;
-    int m = (i + f) / 2;
-    for (; f >= i && codcidade != idxcity[m].codigo; m = (i + f) / 2){
-        if (codcidade > idxcity[m].codigo)
-            i = m + 1;
-        else
-            f = m - 1;
+leitura_indiceCidade (struct indice idx[], int cont){
+    for (int i = 0; i < cont; i++){
+        cout << "\n\nCodigo do Indice " << (i+1) << ": ";
+        cin >> idx[i].codigo;
+        cout << "Endereco Fisico na Area de Dados: ";
+        cin >> idx[i].ender;
     }
-    if (codcidade == idxcity[m].codigo){
-        i = idxcity[m].ender;
-        
-        cout <<"Nome da cidade e UF:  " << city[i].nome << endl << city[i].uf << endl ;
-    	
-    }
-    else
-        cout << "\n\n Cidade nao encontrada ";
-    getch();
-}
-void busca_especialidade (struct especialidade esp[], struct indice_especialidade idxesp[], int &contador_esp, int codesp){
-    int i = 0, f = contador_esp -1 ;
-    int m = (i + f) / 2;
-    for (; f >= i && codesp != idxesp[m].codigo; m = (i + f) / 2){
-        if (codesp > idxesp[m].codigo)
-            i = m + 1;
-        else
-            f = m - 1;
-    }
-    if (codesp == idxesp[m].codigo){
-        i = idxesp[m].ender;
-        
-        cout <<"Nome da Especialidade: " << esp[i].descricao;
-    	
-    }
-    else
-        cout << "\n\n Especialidade não encontrada";
-    getch();
-}
-bool busca_codmedico (struct medico med[], struct indice_medicos idx[], int &cont, int codmedico){
-    int i = 0, f = cont -1 ;
-    int m = (i + f) / 2;
-    for (; f >= i && codmedico != idx[m].codigo; m = (i + f) / 2){
-        if (codmedico > idx[m].codigo)
-            i = m + 1;
-        else
-            f = m - 1;
-    }
-    if (codmedico == idx[m].codigo){
-        i = idx[m].ender;
-        
-        cout <<"Medico ja cadastrado  "; 
-        return true;
-       
-    	
-    }
-    else{
-     cout <<"Medico nao cadastrado  " << endl;
-        return false;
-		}
-    getch();
-}
-bool busca_codpaciente (struct paciente pac[], struct indice_paciente idxpac[], int &cont, int codpaciente){
-    int i = 0, f = cont -1 ;
-    int m = (i + f) / 2;
-    for (; f >= i && codpaciente != idxpac[m].codigo; m = (i + f) / 2){
-        if (codpaciente > idxpac[m].codigo)
-            i = m + 1;
-        else
-            f = m - 1;
-    }
-    if (codpaciente == idxpac[m].codigo){
-        i = idxpac[m].ender;
-        
-        cout <<"Paciente ja cadastrado  "; 
-        return true;
-       
-    	
-    }
-    else{
-     cout <<"Paciente nao cadastrado  " << endl;
-        return false;
-		}
-    getch();
 }
 
-//Fim Das Buscas
-//Mostrar 
-void mostrarMedicos(struct medico med[], int cont){
-	
-    for (int i = 0; i < cont; i++) {
-        cout << "\nCodigo: " << med[i].cod_medico << endl;
-		cout << "Nome: " << med[i].nome << endl;
-		cout << "Codigo da especialidade: " << med[i].codigo_especialidade << endl;
-		cout << "Endereco: " << med[i].endereco << endl;
-		cout << "Cidade: " << med[i].codigo_cidade << endl;
-		cout << "Numero: " << med[i].numero << endl;
+void mostrar_cidade(struct indice ind[], struct cidade cidade[], int cont){
+	for (int i =0; i <cont; i++){
+		cout<<"\n\nCodigo da Cidade " << (i+1) << ": "<< cidade[i].cod_cidade<<endl;
+		cout<<"Nome: "<<cidade[i].nome<<endl;
+		cout<<"Estado: "<<cidade[i].uf<<endl;
 	}
 	getch();
 }
-void mostrarPaciente(struct paciente pac[], int cont){
-	
-    for (int i = 0; i < cont; i++) {
-        cout << "\nCodigo: " << pac[i].cod_paciente << endl;
-		cout << "Nome: " << pac[i].nome << endl;
-		cout << "Endereco: " << pac[i].endereco << endl;
-		cout << "Cidade: " << pac[i].codigo_cidade << endl;
-		
+
+//Especialidades
+
+void leitura_espec(struct especialidade espec[], int &cont){
+	int i = 0;
+    for (int saida = 1; i < 10 && saida != 0; i++){
+        cout<<"\n\nCodigo da Especialidade " << (i+1) << ": ";
+        cin >> espec[i].codEspec;
+        cin.ignore();
+        if (espec[i].codEspec > 0){
+            cout << "Descricao: ";
+            getline(cin, espec[i].descricao);
+        }
+        else saida = 0;
+    }
+    cont = i-1;
+}
+
+leitura_indEspec (struct indice idx[], int cont){
+    for (int i = 0; i < cont; i++){
+        cout << "\n\nCodigo do Indice " << (i+1) << ": ";
+        cin >> idx[i].codigo;
+        cout << "Endereco Fisico na Area de Dados: ";
+        cin >> idx[i].ender;
+    }
+}
+
+void mostrar_espec(struct indice ind[], struct especialidade espec[], int cont){
+	for (int i =0; i <cont; i++){
+		cout<<"\nCodigo da Especialidade: "<<espec[i].codEspec<<endl;
+		cout<<"Descricao: "<<espec[i].descricao<<endl;
 	}
 	getch();
 }
-//Fim dos mostrar
-// Inclusao de medicos
-void inclusao_Medico(struct indice_medicos idx[], struct medico med[], int &cont, struct especialidade esp[], struct indice_especialidade idxesp[], int contador_esp, struct cidade city[], struct indice_cidade idxcity[], int contador_cidade) {
-    if (cont >= 2) {  
-        cout << "Limite de medicos alcancado.";
-        return;
+
+//CID
+
+void leitura_cid(struct cid Cid[], int &cont){
+	int i = 0;
+    for (int saida = 1; i < 10 && saida != 0; i++){
+        cout<<"\n\nCodigo do CID " << (i+1) << ": ";
+        cin >> Cid[i].codi_CID;
+        cin.ignore();
+        if (Cid[i].codi_CID > 0){
+            cout << "Descricao: ";
+            getline(cin, Cid[i].descricao);
+        }
+        else saida = 0;
     }
-    
-    int codmedico;
-    cout << "Digite o codigo a ser incluido: ";
-    cin >> codmedico;
-
-    // Verifica se o médico já está cadastrado
-    if (busca_codmedico(med, idx, cont, codmedico)) {
-        cout << "Medico ja cadastrado.\n";
-        return ;
-    }
-
-    // Inclusão do novo registro na área de dados
-    med[cont].cod_medico = codmedico;
-    cout << "Nome: ";
-    cin >> med[cont].nome;
-    cout << "Endereco: ";
-    cin >> med[cont].endereco;
-    cout << "Codigo da cidade: ";
-    cin >> med[cont].codigo_cidade;
-    int codcidade = med[cont].codigo_cidade;
-    busca_cidade(city, idxcity, contador_cidade, codcidade);
-    cout << "Numero: ";
-    cin >> med[cont].numero;
-    cout << "Codigo da Especialidade: ";
-    cin >> med[cont].codigo_especialidade;
-    int codesp = med[cont].codigo_especialidade;
-
-    if (contador_esp == 0) {
-        cout << "Nenhuma especialidade cadastrada. Não é possível incluir o médico.";
-        return;
-    }
-    
-    busca_especialidade(esp, idxesp, contador_esp, codesp);
-
-    // Inclusão na área de índices
-    int i;
-    for (i = cont - 1; i >= 0 && idx[i].codigo > med[cont].cod_medico; i--) {
-        idx[i + 1].codigo = idx[i].codigo;
-        idx[i + 1].ender = idx[i].ender;
-    }
-    idx[i + 1].codigo = med[cont].cod_medico;
-    idx[i + 1].ender = cont;
-    cont++;  // Atualiza o contador após a inclusão
-
-    cout << "\n\nInclusão realizada com sucesso";
+    cont = i-1;
 }
 
-
-void inclusao_Paciente(struct indice_paciente idxpac[], struct paciente pac[], int &cont, struct cidade city[], struct indice_cidade idxcity[], int contador_cidade) {
-    if (cont >= 2) {  
-        cout << "Limite de Pacientes alcancado.";
-        return;
+leitura_indCid (struct indice idx[], int cont){
+    for (int i = 0; i < cont; i++){
+        cout << "\n\nCodigo do Indice " << (i+1) << ": ";
+        cin >> idx[i].codigo;
+        cout << "Endereco Fisico na Area de Dados: ";
+        cin >> idx[i].ender;
     }
-    
-    int codpaciente;
-    cout << "Digite o codigo a ser incluido: ";
-    cin >> codpaciente;
-
-  
-    if (busca_codpaciente(pac, idxpac, cont, codpaciente)) {
-        cout << "Paciente ja cadastrado.\n";
-        return ;
-    }
-
-    // Inclusão do novo registro na área de dados
-    pac[cont].cod_paciente = codpaciente;
-    cout << "Nome: ";
-    cin >> pac[cont].nome;
-    cout << "Endereco: ";
-    cin >> pac[cont].endereco;
-    cout << "Codigo da cidade: ";
-    cin >> pac[cont].codigo_cidade;
-    int codcidade = pac[cont].codigo_cidade;
-    busca_cidade(city, idxcity, contador_cidade, codcidade);
-
-    // Inclusão na área de índices
-    int i;
-    for (i = cont - 1; i >= 0 && idxpac[i].codigo > pac[cont].cod_paciente; i--) {
-        idxpac[i + 1].codigo = idxpac[i].codigo;
-        idxpac[i + 1].ender = idxpac[i].ender;
-    }
-    idxpac[i + 1].codigo = pac[cont].cod_paciente;
-    idxpac[i + 1].ender = cont;
-    cont++;  // Atualiza o contador após a inclusão
-
-    cout << "\n\nInclusao realizada com sucesso";
 }
 
-//Exclusao
+void mostrar_cid(struct indice ind[], struct cid Cid[], int cont){
+	for (int i =0; i <cont; i++){
+		cout<<"\nCodigo do CID: "<<Cid[i].codi_CID<<endl;
+		cout<<"Descricao: "<<Cid[i].descricao<<endl;
+	}
+	getch();
+}
 
-void exclusaoPacientes (struct indice_paciente idxpac[], struct paciente pac[], int &cont){
-	int codpaciente;
-	cout <<"Digite o codigo do paciente a ser excluido: ";
-	cin >> codpaciente;
+//Medicamento
 
+void leitura_medicamento(struct medicamento med[], int &cont){
+	int i = 0;
+    for (int saida = 1; i < 10 && saida != 0; i++){
+        cout<<"\n\nCodigo do medicamento " << (i+1) << ": ";
+        cin >> med[i].cod_medicamento;
+        cin.ignore();
+        if (med[i].cod_medicamento > 0){
+            cout << "Descricao: ";
+            getline(cin, med[i].descricao);
+            cout << "Qtde no estoque: ";
+            cin >> med[i].qtde_estoque;
+            cout<<"Estoque minimo: ";
+            cin >> med[i].estoque_min;
+            cout<< "Estoque Maximo: ";
+            cin >> med[i].estoque_max;
+            cout<< "Preco Unitario: ";
+            cin>>med[i].preco_unitario;
+        }
+        else saida = 0;
+    }
+    cont = i-1;
+}
+
+leitura_indMedicamento (struct indice idx[], int cont){
+    for (int i = 0; i < cont; i++){
+        cout << "\n\nCodigo do Indice " << (i+1) << ": ";
+        cin >> idx[i].codigo;
+        cout << "Endereco Fisico na Area de Dados: ";
+        cin >> idx[i].ender;
+    }
+}
+
+void mostrar_medicamento(struct indice ind[], struct medicamento med[], int cont){
+	for (int i =0; i <cont; i++){
+		cout<<"\nCodigo do Medicamento: "<<med[i].cod_medicamento<<endl;
+		cout<<"Descricao: "<<med[i].descricao<<endl;
+		cout<<"Qtde no estoque: "<<med[i].qtde_estoque<<endl;
+		cout<<"Estoque minimo: "<<med[i].estoque_min<<endl;
+		cout<<"Estoque maximo: "<<med[i].estoque_max<<endl;
+		cout<<"Preco unitario: "<<med[i].preco_unitario<<endl;
+	}
+	getch();
+}
+
+void consultar_medicamento(struct indice ind[], struct medicamento med[], int cont, int cod){
 	int i = 0, f = cont;
     int m = (i + f) / 2;
-    for (; f >= i && codpaciente != idxpac[m].codigo; m = (i + f) / 2){
-        if (codpaciente > idxpac[m].codigo)
+    for (; f >= i && cod != ind[m].codigo; m = (i + f) / 2){
+        if (cod > ind[m].codigo)
             i = m + 1;
         else
             f = m - 1;
     }
-    i = idxpac[m].ender;
-    if ((codpaciente == idxpac[m].codigo) ){
-        cout << "\n\n Paciente Excluido com Sucesso";
+    if (cod == ind[m].codigo){
+    	int x = ind[m].ender;
+        cout<<"\nCodigo do Medicamento: "<<med[x].cod_medicamento<<endl;
+		cout<<"Descricao: "<<med[x].descricao<<endl;
+		cout<<"Qtde no estoque: "<<med[x].qtde_estoque<<endl;
+		cout<<"Estoque minimo: "<<med[x].estoque_min<<endl;
+		cout<<"Estoque maximo: "<<med[x].estoque_max<<endl;
+		cout<<"Preco unitario: "<<med[x].preco_unitario<<endl;
+		cout<<"Valor Total em Estoque: "<<med[x].qtde_estoque * med[x].preco_unitario<<endl;
+    }
+	getch();
+}
+
+void verificar_medicamento(struct indice ind[], struct medicamento med[], int cont){
+	int x;
+	for (int i =0; i <cont; i++){
+		if(med[i].qtde_estoque < med[i].estoque_min){
+		cout<<"\nCodigo do Medicamento: "<<med[i].cod_medicamento<<endl;
+		cout<<"Descricao: "<<med[i].descricao<<endl;
+		cout<<"Qtde no estoque: "<<med[i].qtde_estoque<<endl;
+		cout<<"Estoque maximo: "<<med[i].estoque_max<<endl;
+		cout<<"Preco unitario: "<<med[i].preco_unitario<<endl;
+		x = med[i].estoque_max - med[i].qtde_estoque;
+		cout<<"Qtde a ser comprada: "<<x<<endl;
+		cout<<"Valor compra: "<<x * med[i].preco_unitario<<endl;
+		}	
+	}
+	getch();
+}
+
+//medico
+
+struct medico medicos[10] = {
+	{1, "Jao", 1, "Avenida Rui Barbosa 57", "(18)99684-8153", 1, 0},
+	{2, "Pedro", 2, "Avenida Jose Bonifacio 536", "(18)99734-5656", 2, 0},
+	{3, "Davi", 2, "Rua Augusto Casachi 188", "(14)996468-9865", 3, 0},
+	{4, "Joice", 1, "Rua 9 De Julho 2", "(14)996587-5698", 4, 0}
+};
+
+struct indice ind_medico[10] ={
+	{1,0},
+	{2,1},
+	{3,2},
+	{4,3},
+};
+
+void buscaaleatespec(struct indice ind_espec[], struct especialidade ler_especialidade[], int &cont_espec, int cod){
+	int i = 0, f = cont_espec;
+    int m = (i + f) / 2;
+    for (; f >= i && cod != ind_espec[m].codigo; m = (i + f) / 2){
+        if (cod > ind_espec[m].codigo)
+            i = m + 1;
+        else
+            f = m - 1;
+    }
+    if (cod == ind_espec[m].codigo){
+    	int x = ind_espec[m].ender;
+        cout << "Nome da Especialidade: " << ler_especialidade[x].descricao << endl;
+    }
+}
+
+void buscaaleatcidade(struct indice ind_cidade[], struct cidade ler_cidade[], int &cont_cidade, int cod){
+	int i = 0, f = cont_cidade;
+    int m = (i + f) / 2;
+    for (; f >= i && cod != ind_cidade[m].codigo; m = (i + f) / 2){
+        if (cod > ind_cidade[m].codigo)
+            i = m + 1;
+        else
+            f = m - 1;
+    }
+    if (cod == ind_cidade[m].codigo){
+    	int x = ind_cidade[m].ender;
+        cout << "Cidade: " << ler_cidade[x].nome << endl;
+        cout << "UF: " << ler_cidade[x].uf << endl;
+    } 
+}
+
+void inclusao_medicos(struct indice idx[], struct medico medicos[], int &cont, int cod, struct especialidade espec[], int cont_espec, struct cidade cid[], int cont_cid, struct indice ind_espec[],struct indice ind_cidade[]){
+	int i;
+    medicos[cont].cod_medico = cod;
+    cin.ignore();
+    cout << "Nome: ";
+    getline(cin, medicos[cont].nome);
+    cout<<"Codigo da Especialidade: ";
+    cin>>medicos[cont].cod_espec;
+    cin.ignore();
+    int codi = medicos[cont].cod_espec;
+    buscaaleatespec(ind_espec, espec, cont_espec, codi);
+	cout << "Endereco: ";
+    getline(cin, medicos[cont].endereco);
+    cout << "Telefone: ";
+    cin >> medicos[cont].telefone;
+    cout<<"Codigo da cidade: ";
+    cin>> medicos[cont].cod_cidade;
+    codi = medicos[cont].cod_cidade;
+    buscaaleatcidade(ind_cidade, cid, cont_cid, codi);
+    medicos[i].status = 0;
+    for (i = cont - 1; idx[i].codigo > cod; i--){
+        idx[i+1].codigo = idx[i].codigo;
+        idx[i+1].ender = idx[i].ender;
+    }
+    idx[i+1].codigo = cod;
+    idx[i+1].ender = cont;
+    cont++;
+    cout << "\n\nInclusao realizada com Sucesso";
+}
+
+void buscaaleatmedico (struct indice idx[], struct medico med[], int &cont, int cod, struct especialidade espec[], int cont_espec, struct cidade cid[], int cont_cid, struct indice ind_espec[], struct indice ind_cidade[]){
+    int i = 0, f = cont;
+    int m = (i + f) / 2;
+    for (; f >= i && cod != idx[m].codigo; m = (i + f) / 2){
+        if (cod > idx[m].codigo)
+            i = m + 1;
+        else
+            f = m - 1;
+    }
+    if (cod == idx[m].codigo){
+        cout << "\n\nMedico ja Cadastrado - nao pode ser cadastrado novamente";
+        i = idx[m].ender;
+        cout << "\nCodigo do Medico: " << med[i].cod_medico<<endl;
+        cout << "Nome: " << med[i].nome<<endl;
+        cout << "Codigo da Especialidade: " << med[i].cod_espec<<endl;
+        cout << "Endereco: " << med[i].endereco<<endl;
+        cout << "Telefone: " << med[i].telefone<<endl;
+        cout << "Codigo da cidade: " << med[i].cod_cidade<<endl;
+    }
+    else
+        inclusao_medicos (idx, med, cont, cod, espec, cont_espec, cid, cont_cid, ind_espec, ind_cidade);
+    getch();
+}
+
+void mostrar_medico(struct indice ind[], struct medico med[], int &cont, struct indice ind_espec[10], struct especialidade ler_especialidade[10], int &cont_espec, struct indice ind_cidade[], struct cidade ler_cidade[], int &cont_cidade) {
+	int cod;
+    for (int i = 0; i < cont; i++) {
+    	if (med[i].status == 0){
+    	cout << "\nCodigo do Medico: " << med[i].cod_medico << endl;
+        cout << "Nome: " << med[i].nome << endl;
+        cout << "Codigo da Especialidade: " << med[i].cod_espec << endl;
+        cod = med[i].cod_espec;
+        buscaaleatespec(ind_espec, ler_especialidade, cont_espec, cod);
+        cout << "Endereco: " << med[i].endereco << endl;
+        cout << "Telefone: " << med[i].telefone << endl;
+        cout << "Codigo da Cidade: " << med[i].cod_cidade << endl;
+        cod = med[i].cod_cidade;
+        buscaaleatcidade(ind_cidade, ler_cidade, cont_cidade, cod);
+		}
+    }
+    getch();
+}
+
+//Pacientes
+
+struct paciente pacientes[10] = {
+	{1, "Taldo", "Antonio Tarcisio Meyer 231", 1, 0},
+	{2, "Junin", "Pedro de souza 303", 2, 0},
+	{3, "Davi", "Marechal Deodoro 551", 3, 0},
+	{4, "Lucas", "Antonio Basilio 123", 1, 0}
+};
+
+struct indice ind_paciente[10] ={
+	{1,0},
+	{2,1},
+	{3,2},
+	{4,3},
+};
+
+void inclusao_paciente(struct indice idx[], struct paciente pacientes[], int &cont, int cod, struct cidade cid[], int cont_cid, struct indice ind_cidade[]){
+    int i;
+	pacientes[cont].cod_paciente = cod;
+    cin.ignore();
+    cout << "Nome: ";
+    getline(cin, pacientes[cont].nome);
+	cout << "Endereco: ";
+    getline(cin, pacientes[cont].endereco);
+    cout<<"Codigo da cidade: ";
+    cin>> pacientes[cont].cod_cidade;
+    int codi = pacientes[cont].cod_cidade;
+    buscaaleatcidade(ind_cidade, cid, cont_cid, codi);
+    pacientes[i].status = 0;
+    for (i = cont - 1; idx[i].codigo > cod; i--){
+        idx[i+1].codigo = idx[i].codigo;
+        idx[i+1].ender = idx[i].ender;
+    }
+    idx[i+1].codigo = cod;
+    idx[i+1].ender = cont;
+    cont++;
+    cout << "\n\nInclusao realizada com Sucesso";
+}
+
+void buscaaleatpaciente (struct indice idx[], struct paciente pacientes[], int &cont, int cod, struct cidade cid[], int cont_cid, struct indice ind_cidade[]){
+    int i = 0, f = cont;
+    int m = (i + f) / 2;
+    for (; f >= i && cod != idx[m].codigo; m = (i + f) / 2){
+        if (cod > idx[m].codigo)
+            i = m + 1;
+        else
+            f = m - 1;
+    }
+    if (cod == idx[m].codigo){
+        cout << "\n\nPaciente ja Cadastrado - nao pode ser cadastrado novamente";
+        i = idx[m].ender;
+        cout << "\nCodigo do Paciente: " << pacientes[i].cod_paciente<<endl;
+        cout << "Nome: " << pacientes[i].nome<<endl;
+        cout << "Endereco: " << pacientes[i].endereco<<endl;
+        cout << "Codigo da cidade: " << pacientes[i].cod_cidade<<endl;
+    }
+    else
+        inclusao_paciente(idx, pacientes, cont, cod, cid, cont_cid, ind_cidade);
+    getch();
+}
+
+void mostrar_paciente(struct indice ind[], paciente pacientes[], int &cont, struct indice ind_cidade[], struct cidade ler_cidade[], int &cont_cidade) {
+    int cod;
+    for (int i = 0; i < cont; i++) {
+        if (pacientes[i].status == 0) {
+            cout << "\nCodigo do Paciente: " << pacientes[i].cod_paciente << endl;
+            cout << "Nome: " << pacientes[i].nome << endl;
+            cout << "Endereco: " << pacientes[i].endereco << endl;
+            cout << "Codigo da Cidade: " << pacientes[i].cod_cidade << endl;
+            cod = pacientes[i].cod_cidade;
+            buscaaleatcidade(ind_cidade, ler_cidade, cont_cidade, cod);
+        }
+    }
+    getch();
+}
+
+
+//Exclus o paciente
+
+void exclusaoPaciente(struct indice idx[], struct paciente pacientes[], int &cont, int cod,struct consulta consultas[]){
+    int i = 0, f = cont;
+    int m = (i + f) / 2;
+    for (; f >= i && cod != idx[m].codigo; m = (i + f) / 2){
+        if (cod > idx[m].codigo)
+            i = m + 1;
+        else
+            f = m - 1;
+    }
+    i = idx[m].ender;
+    if ((cod == idx[m].codigo) && pacientes[i].status == 0){
+    	if (consultas[i].cod_paciente == cod) {
+                cout << "\nPaciente Tem Consultas Agendadas, Nao e Possivel Exclui-lo!" << endl;
+                pacientes[i].status == 0;
+            }
+            else{
+            	pacientes[i].status = 1;
+        cout << "\n\nPaciente Removido com sucesso ";
+			}      
     }
     else
         cout << "Paciente nao cadastrado";
     getch();
 }
-// Função para o menu
-char menu() {
-    int op;
-    cout << "\n+==============================================+";
-    cout << "\n|            MENU DE OPÇÕES                   |";
-    cout << "\n|==============================================|";
-    cout << "\n|            0. Sair                           |";
-    cout << "\n|            1. Leitura de Cidades             |";
-    cout << "\n|            2. Leitura de Especialidade       |";
-    cout << "\n|            3. Mostrar de Medicos             |";
-    cout << "\n|            4. Inclusao de Medicos           |";
-    cout << "\n|            5. Inclusao de Pacientes            |";
-    cout << "\n|            6. Exclusao de Pacientes         |";
-    cout << "\n|            7. Mostrar Pacientes       |";
-    cout << "\n|            8. Consultar Turmas               |";
-    cout << "\n|            9. Exibir Turmas Completas        |";
-    cout << "\n|           10. Exibir Matriculas             |";
-    cout << "\n+==============================================+";
-    cout << "\nEscolha uma opcao: ";
-    cin >> op;
-    return op;
+
+//Exclus o do Medico
+
+void exclusaoMedico(struct indice idx[], struct medico medicos[], int &cont, int cod, struct consulta consultas[]){
+    int i = 0, f = cont;
+    int m = (i + f) / 2;
+    for (; f >= i && cod != idx[m].codigo; m = (i + f) / 2){
+        if (cod > idx[m].codigo)
+            i = m + 1;
+        else
+            f = m - 1;
+    }
+    i = idx[m].ender;
+    if ((cod == idx[m].codigo) && medicos[i].status == 0){
+    	if (consultas[i].cod_medico == cod) {
+                cout << "\nNao e possivel excluir o medico ele possui consultas agendadas" << endl;
+                medicos[i].status == 0;
+            }
+            else{
+            medicos[i].status = 1;
+        	cout << "\n\nMedico Removido com Sucesso";
+    	}
+    }
+    else
+        cout << "Medico nao cadastrado";
+    getch();
 }
 
-// Função principal
+
+//Consultas
+
+struct consulta consultas[10] = {
+	{1, 1, 1, "23/07/2024", "17:24:36", 1, 1, 3},
+	{2, 2, 2, "11/08/2024", "15:39:21", 2, 2, 5},
+	{3, 3, 3, "22/02/2024", "16:43:07", 2, 2, 2},
+};
+
+struct indice ind_consultas[10] ={
+	{1,0},
+	{2,1},
+	{3,2},
+};
+
+void busca_paciente (struct indice idx[], struct paciente pacientes[], int &cont, int cod, struct cidade cid[], int cont_cidade, struct indice ind_cidade[]){
+    int i = 0, f = cont;
+    int m = (i + f) / 2;
+    for (; f >= i && cod != idx[m].codigo; m = (i + f) / 2){
+        if (cod > idx[m].codigo)
+            i = m + 1;
+        else
+            f = m - 1;
+    }
+    if (cod == idx[m].codigo){
+        i = idx[m].ender;
+        cout << "Nome: " << pacientes[i].nome<<endl;
+        int codi = pacientes[i].cod_cidade;
+        buscaaleatcidade(ind_cidade, cid, cont_cidade, codi);
+    }
+}
+
+void busca_medico(struct indice idx[], struct medico med[], int &cont, int cod, struct indice ind_espec[], struct especialidade espec[], int cont_espec){
+	int i = 0, f = cont;
+    int m = (i + f) / 2;
+    for (; f >= i && cod != idx[m].codigo; m = (i + f) / 2){
+        if (cod > idx[m].codigo)
+            i = m + 1;
+        else
+            f = m - 1;
+    }
+    if (cod == idx[m].codigo){
+        i = idx[m].ender;
+        cout << "Nome: " << med[i].nome<<endl;
+        int codi = med[i].cod_espec;
+        buscaaleatespec(ind_espec, espec, cont_espec, codi);
+    }
+}
+
+void busca_cid(struct indice idx[], struct cid ler_cid[], int &cont, int cod){
+	int i = 0, f = cont;
+    int m = (i + f) / 2;
+    for (; f >= i && cod != idx[m].codigo; m = (i + f) / 2){
+        if (cod > idx[m].codigo)
+            i = m + 1;
+        else
+            f = m - 1;
+    }
+    if (cod == idx[m].codigo){
+        i = idx[m].ender;
+        cout << "Descricao CID: " << ler_cid[i].descricao<<endl;
+    }
+}
+
+void busca_medicamento(struct indice idx[], struct medicamento ler_medicamento[], int &cont, int cod){
+	int i = 0, f = cont;
+    int m = (i + f) / 2;
+    for (; f >= i && cod != idx[m].codigo; m = (i + f) / 2){
+        if (cod > idx[m].codigo)
+            i = m + 1;
+        else
+            f = m - 1;
+    }
+    if (cod == idx[m].codigo){
+        i = idx[m].ender;
+        cout << "Descricao Medicamento: " << ler_medicamento[i].descricao<<endl;
+        cout << "Estoque: " << ler_medicamento[i].qtde_estoque<<endl;
+    }
+}
+
+int busca_qtde(struct indice idx[], struct medicamento ler_medicamento[], int &cont, int cod, int qtde){
+	int i = 0, f = cont;
+    int m = (i + f) / 2;
+    for (; f >= i && cod != idx[m].codigo; m = (i + f) / 2){
+        if (cod > idx[m].codigo)
+            i = m + 1;
+        else
+            f = m - 1;
+    }
+    if (cod == idx[m].codigo){
+        i = idx[m].ender;
+        if(ler_medicamento[i].qtde_estoque < qtde){
+        	cout << "\nEstoque insuficiente.\n" << endl;
+        	return 0;
+		} else{
+			ler_medicamento[i].qtde_estoque = ler_medicamento[i].qtde_estoque - qtde;
+			cout << "\nEstoque do medicamento alterado: " << ler_medicamento[i].qtde_estoque;
+			return 1;
+		}
+    }
+}
+
+void agendar_consulta(struct indice idx[], struct consulta consultas[], int &cont, int cod, struct indice ind[], struct paciente pacientes[], int cont_paciente, struct cidade cid[], int cont_cidade, struct indice ind_cidade[], struct indice ind_medico[], struct medico med[], int cont_medico, struct indice ind_espec[], struct especialidade espec[], int cont_espec, struct indice ind_cid[], struct cid ler_cid[], int cont_cid, struct indice ind_medicamento[], struct medicamento ler_medicamento[],int cont_medicamento){
+	int i, qtde;
+	int j = 0;
+	consultas[cont].cod_consulta = cod;
+    cin.ignore();
+    cout << "Codigo do Paciente: ";
+    cin>> consultas[cont].cod_paciente;
+    int codi = consultas[cont].cod_paciente;
+    busca_paciente(ind, pacientes, cont_paciente, codi, cid, cont_cidade, ind_cidade);
+	cout << "Codigo do medico: ";
+    cin>> consultas[cont].cod_medico;
+    codi = consultas[cont].cod_medico;
+	busca_medico(ind_medico, med, cont_medico, codi, ind_espec, espec, cont_espec);
+    cout << "Data da Consulta: ";
+    cin>> consultas[cont].data;
+    cout << "Horario da Consuta: ";
+    cin>> consultas[cont].horario;
+    cout << "Codigo do CID: ";
+    cin>> consultas[cont].cod_CID;
+    codi = consultas[cont].cod_CID;
+    busca_cid(ind_cid, ler_cid, cont_cid, codi);
+    while(true){
+    cout << "Codigo do Medicamento: ";
+    cin>> consultas[cont].cod_medicamento;
+    codi = consultas[cont].cod_medicamento;
+    busca_medicamento(ind_medicamento, ler_medicamento, cont_medicamento, codi);
+	cout << "Qtde de Medicamento: ";
+    cin>> consultas[cont].qtde_medicamento;
+    qtde = consultas[cont].qtde_medicamento;
+    j = busca_qtde(ind_medicamento, ler_medicamento, cont_medicamento, codi, qtde);
+    if(j == 1){
+    	break;
+	}
+    } 
+    for (i = cont - 1; idx[i].codigo > cod; i--){
+        idx[i+1].codigo = idx[i].codigo;
+        idx[i+1].ender = idx[i].ender;
+    }
+    idx[i+1].codigo = cod;
+    idx[i+1].ender = cont;
+    cont++;
+    cout << "\n\nConsulta agendada com Sucesso";
+}
+
+void buscaaleatconsultas (struct indice idx[], struct consulta consultas[], int &cont, int cod, struct indice ind_paciente[], struct paciente pacientes[], int cont_paciente, struct cidade cid[], struct indice ind_cidade[], int cont_cidade, struct indice ind_medico[], struct medico med[], int cont_medico, struct indice ind_espec[], struct especialidade espec[], int cont_espec, struct indice ind_cid[], struct cid ler_cid[], int cont_cid, struct indice ind_medicamento[], struct medicamento ler_medicamento[],int cont_medicamento){
+    int i = 0, f = cont;
+    int m = (i + f) / 2;
+    for (; f >= i && cod != idx[m].codigo; m = (i + f) / 2){
+        if (cod > idx[m].codigo)
+            i = m + 1;
+        else
+            f = m - 1;
+    }
+    if (cod == idx[m].codigo){
+        cout << "\n\nConsulta ja Cadastrada - nao pode ser cadastrado novamente";
+        i = idx[m].ender;
+        cout << "\nCodigo da Consulta: " << consultas[i].cod_consulta<<endl;
+        cout << "Codigo do Paciente: " << consultas[i].cod_paciente<<endl;
+        cout << "Codigo do Medico: " << consultas[i].cod_medico<<endl;
+        cout << "Data da Consulta: " << consultas[i].data<<endl;
+        cout << "Horario: " << consultas[i].horario<<endl;
+        cout << "Codigo do CID: " << consultas[i].cod_CID<<endl;
+        cout << "Codigo do Medicamento: " << consultas[i].cod_medicamento<<endl;
+        cout << "Qtde de Medicamento: " << consultas[i].qtde_medicamento<<endl;
+    }
+    else
+        agendar_consulta (idx, consultas, cont, cod, ind_paciente, pacientes, cont_paciente, cid, cont_cidade, ind_cidade, ind_medico, med, cont_medico, ind_espec, espec, cont_espec, ind_cid, ler_cid, cont_cid, ind_medicamento, ler_medicamento, cont_medicamento);
+    getch();
+}
+
+void valor_consultas(struct indice ind[], struct consulta consultas[], int cont, struct indice idx[], struct medicamento med[], int cont_medicamento){
+	int valor, i, m, cod, f;
+	for (int j = 0; j <cont; j++){
+		cod = consultas[j].cod_medicamento;
+		i = 0, f = cont_medicamento;
+        m = (i + f) / 2;
+        for (; f >= i && cod != idx[m].codigo; m = (i + f) / 2){
+        if (cod > idx[m].codigo)
+            i = m + 1;
+        else
+            f = m - 1;
+        }
+        if (cod == idx[m].codigo){
+        	valor = valor + (consultas[j].qtde_medicamento * med[m].preco_unitario);
+		}
+	}
+	valor = valor + (cont * 100);
+	cout << "\n\nValor total das consultas: " << valor;
+	getch();
+}
+
+void mostrar_consulta(struct indice ind[], struct consulta consultas[], int cont, struct indice idx[], struct paciente pacientes[], int &cont_paciente, struct cidade cid[], int cont_cidade, struct indice ind_cidade[], struct indice ind_medico[], struct medico med[], int cont_medico, struct indice ind_espec[], struct especialidade espec[], int cont_espec, struct indice ind_cid[], struct cid ler_cid[], int cont_cid,  struct indice ind_medicamento[], struct medicamento ler_medicamento[],int cont_medicamento){
+	int codi;
+	for (int i =0; i <cont; i++){
+		cout<<"\nCodigo da Consulta: "<<consultas[i].cod_consulta<<endl;
+		cout<<"Codigo do paciente: "<<consultas[i].cod_paciente<<endl;
+		codi = consultas[i].cod_paciente;
+        busca_paciente(idx, pacientes, cont_paciente, codi, cid, cont_cidade, ind_cidade);
+		cout<<"Codigo do medico: "<<consultas[i].cod_medico<<endl;
+		codi = consultas[i].cod_medico;
+		busca_medico(ind_medico, med, cont_medico, codi, ind_espec, espec, cont_espec);
+		cout<<"Data da Consulta: "<<consultas[i].data<<endl;
+		cout<<"Horario da Consulta: "<<consultas[i].horario<<endl;
+		cout<<"Codigo do CID: "<<consultas[i].cod_CID<<endl;
+		codi = consultas[i].cod_CID;
+		busca_cid(ind_cid, ler_cid, cont_cid, codi);
+		cout<<"Codigo do Medicamento: "<<consultas[i].cod_medicamento<<endl;
+		codi = consultas[i].cod_medicamento;
+		busca_medicamento(ind_medicamento, ler_medicamento, cont_medicamento, codi);
+		cout<<"Qtde de Medicamento: "<<consultas[i].qtde_medicamento<<endl;
+	}
+	getch();
+}
+
 int main() {
-    setlocale(LC_ALL, "Portuguese");
-    struct cidade city[2];
-    struct indice_cidade idxcity[2];
-    struct especialidade esp[2];
-    struct indice_especialidade idxesp[2];
-    struct medico med[2]={
-    	{1, "Joao", 14, "Avenida Sao Paulo", "18996472005", 2}
-	};
-    struct paciente pac[2]={
-    	{1,"Taldo Junin", "Avenida", 1}
-	};
-	struct indice_paciente idxpac[2]={
-		{1,0}
-	};
-    struct cid cid[2];
-   // struct indice_CID[2];
-    struct medicamento medicamen[2];
-    struct indice_medicos idxmed[2]={
-    	{1,0}
-	};
+    setlocale(LC_ALL, "portuguese");
+    system("color F0");
+    cidade ler_cidade[10];
+    cid ler_cid[10];
+    medicamento ler_medicamento[10];
+    especialidade ler_especialidade[10];
+    indice ind_cidade[10], ind_espec[10], ind_cid[10], ind_medicamento[10];
+    int cont_cidade = 0, cont_espec = 0, cont_cid = 0, cont_medicamento = 0, cont_medico = 5, cont_paciente = 5, cont_consulta = 3;
+    
+    char op = 'X';
 
-    struct consulta con[2]; 
-    int contador_cidade = 0, contador_esp = 0, contador_cid = 0, contador_medicamentos = 0, contador_medicos = 1, contador_paciente = 1;
-    int cont_indiceesp = 0 ; 
-    char opcao;
+    while (op != '0') {
+        system("cls"); 
+        cout << "\t+=========================================+\n";
+        cout << "\t|         Bem Vindo Ao Programa           |\n";
+        cout << "\t|=========================================|\n";
+        cout << "\t|  0 - Sair                               |\n";
+        cout << "\t|  1 - Cidades                            |\n";
+        cout << "\t|  2 - Especialidades                     |\n";
+        cout << "\t|  3 - CID                                |\n";
+        cout << "\t|  4 - Medicamentos                       |\n";
+        cout << "\t|  5 - Medicos                            |\n";
+        cout << "\t|  6 - Pacientes                          |\n";
+        cout << "\t|  7 - Consultas                          |\n";
+        cout << "\t+=========================================+\n\n";    
+        cout << "\tEscolha uma opcao: ";
+        cin >> op;
 
-    do {
-        opcao = menu();
-        switch (opcao) {
-            case 1:
-                lerDadosCidades(city, contador_cidade);
-                leitura_indicecidades(idxcity, contador_cidade);
-                break;
-            case 2:
-                lerDadosEspecialidades(esp, contador_esp);
-				 leitura_indiceesp(idxesp,contador_esp);
-                break;
-            case 3:
-            	mostrarMedicos(med, contador_medicos);
-                break;
-            case 4:
-                inclusao_Medico(idxmed, med, contador_medicos, esp, idxesp, contador_esp, city, idxcity, contador_cidade);
-                break;
-            case 5:
-            	inclusao_Paciente(idxpac, pac, contador_paciente, city, idxcity, contador_cidade);
-            	break;
-            case 6:
-            	exclusaoPacientes(idxpac, pac, contador_paciente);
-            	break;
-            case 7:
-            	mostrarPaciente(pac, contador_paciente);
-            	break;	
-            case 0:
-                cout << "Saindo...";
-                break;
-            default:
-                cout << "Opção inválida.";
-                break;
+        switch(op) {
+            case '1':leitura_cidade(ler_cidade, cont_cidade);leitura_indiceCidade(ind_cidade, cont_cidade);mostrar_cidade(ind_cidade, ler_cidade, cont_cidade);break;
+            case '2':leitura_espec(ler_especialidade, cont_espec);leitura_indEspec(ind_espec, cont_espec);mostrar_espec(ind_espec, ler_especialidade, cont_espec);break;
+            case '3':leitura_cid(ler_cid, cont_cid);leitura_indCid(ind_cid, cont_cid);mostrar_cid(ind_cid, ler_cid, cont_cid);break;
+            case '4': {
+                char submenu = 'X';
+                while (submenu != '0') {
+                    system("cls");
+                    cout << "\t+=========================================+\n";
+                    cout << "\t|         Menu Medicamento                |\n";
+                    cout << "\t|=========================================|\n";
+                    cout << "\t|  0 - Voltar para o Menu Principal       |\n";
+                    cout << "\t|  1 - Incluir Medicamento                |\n";
+                    cout << "\t|  2 - Consultar Medicamento              |\n";
+                    cout << "\t|  3 - Verificar Estoque                  |\n";
+                    cout << "\t+=========================================+\n\n";    
+                    cout << "\tEscolha uma opcao: ";
+                    cin >> submenu;
+                    switch (submenu) {
+                        case '1':leitura_medicamento(ler_medicamento, cont_medicamento);leitura_indMedicamento(ind_medicamento, cont_medicamento);mostrar_medicamento(ind_medicamento, ler_medicamento, cont_medicamento);break;
+                        case '2':for (int codpesq = 9; codpesq != 0;) {
+                                cout << "\n\nInforme o Codigo do Medicamento a ser Buscado (0 para Encerrar): ";
+                                cin >> codpesq;
+                                if (codpesq == 0) break;
+                                consultar_medicamento(ind_medicamento, ler_medicamento, cont_medicamento, codpesq);
+                            }break;
+                        case '3':verificar_medicamento(ind_medicamento,ler_medicamento,cont_medicamento);break;    
+                    }
+                }break;
+            }
+            case '5': {
+    			char submenu = 'X';
+                while (submenu != '0') {
+                    system("cls");
+                    cout << "\t+=========================================+\n";
+                    cout << "\t|         Menu Medico                     |\n";
+                    cout << "\t|=========================================|\n";
+                    cout << "\t|  0 - Voltar para o Menu Principal       |\n";
+                    cout << "\t|  1 - Incluir Medico                     |\n";
+                    cout << "\t|  2 - Excluir Medico                     |\n";
+                    cout << "\t|  3 - Mostrar Medico                     |\n";
+                    cout << "\t+=========================================+\n\n";    
+                    cout << "\tEscolha uma opcao: ";
+                    cin >> submenu;
+                    switch (submenu) {
+                        case '1': {
+                            for (int codpesq = 9; codpesq != 0;) {
+                                cout << "\n\nInforme o Codigo do Medico a ser Incluido (0 para Encerrar): ";
+                                cin >> codpesq;
+                                if (codpesq == 0) break;
+                                buscaaleatmedico(ind_medico, medicos, cont_medico, codpesq, ler_especialidade, cont_espec, ler_cidade, cont_cidade, ind_espec, ind_cidade);
+                            }break;
+                        }
+                        case '2':for (int codpesq = 9; codpesq != 0;) {
+                                 cout << "\n\nInforme o Codigo do Medico a ser Excluido (0 para Encerrar): ";
+                                 cin >> codpesq;
+                                 if (codpesq != 0)
+                                    exclusaoMedico(ind_medico, medicos, cont_medico, codpesq, consultas);
+                            }break;
+                        case '3':mostrar_medico(ind_medico, medicos, cont_medico, ind_espec, ler_especialidade, cont_espec, ind_cidade, ler_cidade, cont_cidade);break;
+                    }
+                }break;
+            }
+            case '6': {
+                char submenu = 'X';
+                while (submenu != '0') {
+                    system("cls");
+                    cout << "\t+=========================================+\n";
+                    cout << "\t|         Menu Paciente                   |\n";
+                    cout << "\t|=========================================|\n";
+                    cout << "\t|  0 - Voltar para o Menu Principal       |\n";
+                    cout << "\t|  1 - Incluir Paciente                   |\n";
+                    cout << "\t|  2 - Excluir Paciente                   |\n";
+                    cout << "\t|  3 - Mostrar Paciente                   |\n";
+                    cout << "\t+=========================================+\n\n";    
+                    cout << "\tEscolha uma opcao: ";
+                    cin >> submenu;
+                    switch (submenu) {
+                        case '1': {
+                            for (int codpesq = 9; codpesq != 0;) {
+                                cout << "\n\nInforme o Codigo do Paciente a ser Incluido (0 para Encerrar): ";
+                                cin >> codpesq;
+                                if (codpesq == 0) break;
+                                buscaaleatpaciente(ind_paciente, pacientes, cont_paciente, codpesq, ler_cidade, cont_cidade, ind_cidade);
+                            }break;
+                        }
+                        case '2':for (int codpesq = 9; codpesq != 0;) {
+                                 cout << "\n\nInforme o Codigo do Paciente a ser Excluido (0 para Encerrar): ";
+                                 cin >> codpesq;
+                                 if (codpesq != 0)
+                                    exclusaoPaciente(ind_paciente, pacientes, cont_paciente, codpesq, consultas);
+                            }break;
+                        case '3':mostrar_paciente(ind_paciente, pacientes, cont_paciente, ind_cidade, ler_cidade, cont_cidade);break;
+                    }
+                }break;
+            }
+            case '7': {
+                char submenu = 'X';
+                while (submenu != '0') {
+                    system("cls");
+                    cout << "\t+=========================================+\n";
+                    cout << "\t|         Menu Consultas                  |\n";
+                    cout << "\t|=========================================|\n";
+                    cout << "\t|  0 - Voltar para o Menu Principal       |\n";
+                    cout << "\t|  1 - Agendar Consulta                   |\n";
+                    cout << "\t|  2 - Mostrar Consulta                   |\n";
+                    cout << "\t|  3 - Valor total das Consultas          |\n";
+                    cout << "\t+=========================================+\n\n";    
+                    cout << "\tEscolha uma opcao: ";
+                    cin >> submenu;
+                    switch (submenu) {
+                        case '1': {
+                            for (int codpesq = 9; codpesq != 0;) {
+                                cout << "\n\nInforme o Codigo da Consulta a ser agendada (0 para Encerrar): ";
+                                cin >> codpesq;
+                                if (codpesq == 0) break;
+                                buscaaleatconsultas(ind_consultas, consultas, cont_consulta, codpesq, ind_paciente, pacientes, cont_paciente, ler_cidade, ind_cidade, cont_cidade, ind_medico, medicos, cont_medico, ind_espec, ler_especialidade, cont_espec, ind_cid, ler_cid, cont_cid, ind_medicamento, ler_medicamento, cont_medicamento);
+                            }break;
+                        }
+                        case '2':mostrar_consulta(ind_consultas, consultas, cont_consulta, ind_paciente, pacientes, cont_paciente, ler_cidade, cont_cidade, ind_cidade, ind_medico, medicos, cont_medico, ind_espec, ler_especialidade, cont_espec, ind_cid, ler_cid, cont_cid, ind_medicamento, ler_medicamento, cont_medicamento);break;
+                        case '3':valor_consultas(ind_consultas, consultas, cont_consulta, ind_medicamento, ler_medicamento, cont_medicamento);break;
+					}
+                }break;
+            }
+            case '0':cout << "\n\tObrigado por usar o programa\n";break;
+            default:cout << "\n\tOpção Inválida: " << op << endl;break;
         }
-        if (opcao != 0) {
-            cout << "\nPressione qualquer tecla para continuar...";
-            getch();
-        }
-    } while (opcao != 0);
+        system("pause");
+    }
 
     return 0;
 }
+
